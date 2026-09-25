@@ -1,0 +1,48 @@
+# --- Secrets & environment ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+**/secrets/
+
+# --- AWS ---
+.aws-sam/
+cdk.out/
+cdk.context.json
+.cdk.staging/
+*.aws-config
+
+# --- Dependencies ---
+node_modules/
+.pnpm-store/
+
+# --- Build output ---
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# --- Testing / coverage ---
+coverage/
+.nyc_output/
+
+# --- Logs ---
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# --- OS / editor junk ---
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# --- Local dev / misc ---
+*.local
+.turbo/
