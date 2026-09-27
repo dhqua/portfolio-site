@@ -6,6 +6,7 @@ Instructions for AI coding agents working in this repo.
 
 - `docs/SPEC.md`: what we're building and why
 - `docs/SLICES.md`: build order and the current slice
+- `docs/SLICE_0_PLAN.md`: Slice 0 plan with a progress checklist (check items off as you go)
 - `docs/DECISIONS.md`: why things are the way they are (don't re-litigate these without flagging it)
 
 ## Stack
