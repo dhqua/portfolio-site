@@ -3,10 +3,12 @@
 > The goal is to understand the code, not just approve it. If you can't explain it, don't merge it.
 
 ## Before you read the diff (1 min)
+
 - [ ] **Predict:** Which files should this touch, and roughly how?
 - [ ] **Recall the spec:** What are the acceptance criteria, and did I write the key test cases?
 
 ## Review in risk order
+
 1. **Blast radius:** read these line by line.
    - [ ] IAM: every permission justified, no unexplained `*`
    - [ ] `cdk diff`: nothing unexpectedly replaced or deleted
@@ -23,6 +25,7 @@
 5. **Style:** leave it to lint
 
 ## Before you merge
+
 - [ ] **Explain-back:** I can explain this diff in 2 sentences without looking.
 - [ ] **Interrogate:** asked "Why this over X?", "What breaks if Y fails?", or "What would you remove?"
 - [ ] **Run it:** hit the endpoint, check the logs, look at the real output.
@@ -30,6 +33,7 @@
 - [ ] **PR note:** What I learned / what I pushed back on: ___
 
 ## Red flags: stop and slow down
+
 - Approving faster than I could explain
 - Can't say why an IAM permission exists
 - Pasting errors into the agent before forming my own hypothesis
