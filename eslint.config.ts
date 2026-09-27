@@ -11,6 +11,7 @@ export default defineConfig(
     '**/.next/',
     '**/cdk.out/',
     '**/coverage/',
+    '**/next-env.d.ts',
   ]),
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
@@ -35,8 +36,8 @@ export default defineConfig(
     },
   },
   {
-    // Tooling config files must default-export their config.
-    files: ['*.config.ts'],
+    // Tooling configs and Next.js route files must use default exports.
+    files: ['**/*.config.ts', 'apps/web/src/app/**/{page,layout,not-found}.tsx'],
     rules: { 'no-restricted-syntax': 'off' },
   },
   prettier,
