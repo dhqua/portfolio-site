@@ -74,3 +74,20 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 
 - **Why:** typescript-eslint supports TypeScript `<6.1`, so TS 7 would break type-aware linting. ESLint's `unstable_native_nodejs_ts_config` flag uses Node 24's type stripping, which avoids adding `jiti`.
 - **Revisit:** Move to TS 7 when typescript-eslint supports it. Drop the flag once it's stable or becomes the default.
+
+**D-015 — Serve on the default CloudFront URL until a domain exists** · Accepted · 2026-10-01
+
+- **Why:** No domain is registered yet, and it shouldn't block the walking skeleton. Route 53 and ACM arrive in a small follow-up ("Slice 0.5").
+- **Tradeoff:** The URL is ugly and will change, and SPEC acceptance criterion 1 (`https://<domain>`) isn't met until Slice 0.5.
+- **Revisit:** Once the domain is registered.
+
+**D-017 — The site bucket uses `RemovalPolicy.RETAIN`** · Accepted · 2026-10-01
+
+- **Why:** `DESTROY` on a non-empty bucket needs `autoDeleteObjects`, which adds a custom-resource Lambda and IAM role. The content is rebuilt from the repo on every deploy, so retention costs almost nothing.
+- **Tradeoff:** Deleting the stack leaves the bucket behind, and it has to be emptied and deleted by hand.
+
+**D-018 — Run TypeScript directly on Node; relax `exactOptionalPropertyTypes` in `infra`** · Accepted · 2026-10-01
+
+- **What:** The CDK app runs as `node bin/app.ts` using Node 24 type stripping. Relative imports use `.ts` extensions (`allowImportingTsExtensions`), and `erasableSyntaxOnly` rejects syntax Node can't strip, such as enums. `infra/tsconfig.json` turns off `exactOptionalPropertyTypes`.
+- **Why:** This avoids adding `tsx` or `ts-node`, the same reasoning as D-014. `aws-cdk-lib`'s own declarations fail under `exactOptionalPropertyTypes` (for example, `Bucket` isn't assignable to `IBucket`).
+- **Revisit:** Turn the flag back on if `aws-cdk-lib`'s types become compatible.

@@ -20,7 +20,7 @@
    - [ ] They test behavior, not implementation details
    - [ ] Break the code on purpose; a test goes red
 4. **Design fit**
-   - [ ] Follows AGENTS.md and DECISIONS.md
+   - [ ] Follows CLAUDE.md and DECISIONS.md
    - [ ] No sneaky new dependency, abstraction, or pattern
 5. **Style:** leave it to lint
 
