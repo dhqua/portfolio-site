@@ -47,7 +47,7 @@ pnpm --filter infra synth   # needs BUDGET_ALERT_EMAIL: copy infra/.env.example 
 pnpm eval                   # run assistant evals
 ```
 
-Only CI deploys to production. Don't run `cdk deploy` against prod locally.
+Only CI deploys to production. Don't run `cdk deploy` against prod locally. The one exception is the one-time bootstrap, which the owner runs by hand (D-016): `cdk bootstrap`, then `cdk deploy GitHubOidcStack`. See `docs/SLICE_0_PLAN.md`, PR 4.
 
 ## Workflow
 
