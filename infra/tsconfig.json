@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    // aws-cdk-lib's declarations break under this flag (Bucket isn't assignable to IBucket). See D-018.
+    "exactOptionalPropertyTypes": false
+  },
+  "include": ["bin", "lib", "test"]
+}

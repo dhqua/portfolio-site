@@ -16,11 +16,19 @@ Each slice is thin, end to end, deployed, tested, and demoable. Finish one befor
 
 - Repo, pnpm workspaces, strict TypeScript, lint, format, Vitest, and CI.
 - Branch protection on `main`; all changes via PR (trunk-based, D-013).
-- CDK stack: S3 + CloudFront (OAC) + Route 53 + ACM, with a "Hello" page.
+- CDK stack: S3 + CloudFront (OAC), with a "Hello" page. Route 53 + ACM move to Slice 0.5 (D-015).
 - GitHub Actions deploys `main` through an OIDC role.
 - AWS Budgets alerts at $10 and $25, defined in CDK.
 
-**Done when:** a push to `main` goes live at `https://<domain>`, a failing check blocks merge, and a CDK assertion test proves the bucket is private.
+**Done when:** a push to `main` goes live at the CloudFront URL, a failing check blocks merge, and a CDK assertion test proves the bucket is private.
+
+Progress and the PR breakdown are in `docs/SLICE_0_PLAN.md`.
+
+## Slice 0.5: Custom domain (after the domain is registered)
+
+- Route 53 hosted zone lookup, ACM certificate, and alias records, behind an optional `SITE_DOMAIN`.
+
+**Done when:** a push to `main` goes live at `https://<domain>`.
 
 ## Slice 1: Content site (days 4–5)
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { parseEnv } from './parse-env';
+import { parseEnv } from './parse-env.ts';
 
 const schema = z.object({
   ENV: z.enum(['dev', 'prod']).default('prod'),

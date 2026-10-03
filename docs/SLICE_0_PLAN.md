@@ -2,22 +2,26 @@
 
 ## Progress checklist
 
-**Status (2026-09-26):** Step 0 (except SSO login), PR 1, and PR 2 are merged. **Next: PR 3.**
+**Status (2026-10-01):** Step 0, PR 1, and PR 2 are done. PR 3 is open for review (branch `slice-0/infra-site-stack`). **Next: merge PR 3, then PR 4.**
 
-- [ ] **Step 0**
+- [x] **Step 0**
   - [x] Node 24 + `corepack enable` (pnpm 12.6.0)
   - [x] Branch protection on `main` (ruleset `main-trunk`, admin bypass allowed, squash-only)
-  - [ ] `aws sso login` (needed before PR 4)
+  - [x] `aws sso login` (owner confirmed 2026-10-01)
 - [x] **PR 1: Monorepo tooling** — merged (#1)
 - [x] **PR 2: `apps/web` "Hello" page** — merged (#2)
-- [ ] **PR 3: `infra`: SiteStack + Budgets**
+- [ ] **PR 3: `infra`: SiteStack + Budgets** — PR open, not merged
+  - [x] `infra` package, `bin/app.ts` config parsing and tags, `synth` script, `'infra'` in Vitest projects
+  - [x] SiteStack: private S3, CloudFront + OAC, rewrite function, BucketDeployment, Budgets, `DistributionUrl` output
+  - [x] Assertion tests; removing `blockPublicAccess` turns a test red
+  - [x] Domain hook moved to Slice 0.5 (see notes)
 - [ ] **PR 4: `infra`: GitHubOidcStack**
   - [ ] Owner runs `cdk bootstrap` + `cdk deploy GitHubOidcStack` locally
   - [ ] Owner sets repo variables `AWS_DEPLOY_ROLE_ARN` and `BUDGET_ALERT_EMAIL`
 - [ ] **PR 5: CI/CD** (branch protection already exists; only add the required `ci` check)
 - [ ] **Docs** (see "Docs" section below)
-  - [ ] DECISIONS additions
-  - [ ] SPEC open question "Public or private repo?" resolved as public
+  - [ ] DECISIONS additions (D-015, D-017, D-018 added in PR 3; D-016 comes with PR 4)
+  - [x] SPEC open question "Public or private repo?" resolved as public
   - [x] CLAUDE.md: `pnpm build` / `pnpm format` commands, "imports this file" line fixed
   - [ ] CLAUDE.md: one-time bootstrap note
 - [ ] **Verification** (see "Verification" section below)
@@ -27,6 +31,14 @@
 - Trunk-based development was added (D-013): no direct commits to `main`; branch `slice-0/<topic>` from `main` and squash-merge by PR.
 - D-013 and D-014 are taken (trunk-based; toolchain pins), so this plan's D-013/14/15 become **D-015/16/17**.
 - TypeScript is pinned to 6.0 (typescript-eslint limit), pnpm is 12.6, and Vitest uses `vitest.config.ts` `test.projects` instead of `vitest.workspace.ts`. PR 3 must add `'infra'` to those projects and give `infra` a `synth` script.
+- PR 3 departures:
+  - **Domain hook deferred to Slice 0.5**, along with the `SITE_DOMAIN` env var. A hosted-zone lookup needs a real account and context, and untested dead code isn't worth the lines.
+  - The CDK app runs with plain `node bin/app.ts` (Node 24 type stripping, no `tsx`). That needs `.ts` extensions on relative imports, so `tsconfig.base.json` gains `allowImportingTsExtensions` and `erasableSyntaxOnly`, and `packages/shared` imports were updated (D-018).
+  - `infra/tsconfig.json` turns off `exactOptionalPropertyTypes`, because `aws-cdk-lib`'s types fail under it (D-018).
+  - CloudFront maps both 403 and 404 to `/404.html` (S3 returns 403 for missing keys under OAC). The rewrite function also handles `/about` as well as `/about/`.
+  - `CfnBudget` isn't reached by `Tags.of()`, so the stack copies its tags into `ResourceTags`. The app passes the tags as stack props for this reason.
+  - `synth` requires `BUDGET_ALERT_EMAIL` to be set, including locally.
+  - `infra/cdk.json` sets no CDK feature flags (`cdk synth` warns about 83 of them). Decide whether to adopt the recommended set before the first deploy in PR 5, because changing flags later can replace resources.
 
 **Instructions for agents**
 
@@ -127,6 +139,6 @@ What we agreed:
 ## Verification
 
 - Locally for each PR: `pnpm lint && pnpm typecheck && pnpm test && pnpm --filter infra synth` all pass.
-- The PR 3 tests fail if `blockPublicAccess` is removed. We break it on purpose once to prove this.
+- The PR 3 tests fail if `blockPublicAccess` is removed. We break it on purpose once to prove this. (Done 2026-10-01: the "blocks all public access" test fails.)
 - After PR 5: a PR with a deliberate lint error shows a red check and can't be merged. A merge to `main` deploys, and the CloudFront URL shows "Hello".
 - The Budgets console shows both budgets. Confirm the email subscription if AWS asks you to.

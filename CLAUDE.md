@@ -43,7 +43,7 @@ pnpm lint                   # ESLint + Prettier check
 pnpm format                 # Prettier write
 pnpm typecheck
 pnpm test
-pnpm --filter infra synth
+BUDGET_ALERT_EMAIL=you@example.com pnpm --filter infra synth   # synth needs this env var
 pnpm eval                   # run assistant evals
 ```
 
@@ -66,6 +66,7 @@ Only CI deploys to production. Don't run `cdk deploy` against prod locally.
 - Read config from env vars and validate it at startup. Never hardcode ARNs, account IDs, domains, or model IDs.
 - Log structured JSON. Never log secrets, tokens, or full user prompts.
 - Use named exports and kebab-case file names.
+- Write relative imports with the `.ts` extension so Node can run TypeScript directly (D-018).
 
 ## Infrastructure rules
 
