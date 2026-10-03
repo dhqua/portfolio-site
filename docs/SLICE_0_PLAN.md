@@ -40,13 +40,13 @@
   - `infra/tsconfig.json` turns off `exactOptionalPropertyTypes`, because `aws-cdk-lib`'s types fail under it (D-018).
   - CloudFront maps both 403 and 404 to `/404.html` (S3 returns 403 for missing keys under OAC). The rewrite function also handles `/about` as well as `/about/`.
   - `CfnBudget` isn't reached by `Tags.of()`, so the stack copies its tags into `ResourceTags`. The app passes the tags as stack props for this reason.
-  - `synth` requires `BUDGET_ALERT_EMAIL` to be set, including locally.
+  - `synth` requires `BUDGET_ALERT_EMAIL` to be set, including locally. Since #6, the CDK app loads it from `infra/.env` (copy `infra/.env.example`).
   - `infra/cdk.json` set no CDK feature flags. Resolved in PR 4, below.
 - PR 4 departures:
   - The first commit sets every CDK feature flag to its recommended value, because PR 4, not PR 5, has the first deploy. The CLI only sets boolean flags, so `target-partitions` and `defaultCrossStackReferences` were added by hand. SiteStack's template changed only cosmetically.
   - The OIDC provider uses `OidcProviderNative` (plain `AWS::IAM::OIDCProvider`, no thumbprints) instead of the custom-resource `OpenIdConnectProvider`.
   - The repo comes from `GITHUB_REPOSITORY` (GitHub Actions sets it), defaulting to `dhqua/portfolio-site`, so the trust isn't hardcoded in the stack.
-  - The app synthesizes both stacks, so the bootstrap deploy also needs `BUDGET_ALERT_EMAIL` set.
+  - The app synthesizes both stacks, so the bootstrap deploy also needs `BUDGET_ALERT_EMAIL`, which comes from `infra/.env`.
 
 **Instructions for agents**
 
@@ -118,7 +118,8 @@ What we agreed:
 - Assertion tests cover the trust conditions and confirm the policy contains no action other than `sts:AssumeRole`.
 - **You run this once, locally, with the SSO profile.** It's the only local deploy, and it's needed because CI can't create its own role:
   ```
-  export AWS_PROFILE=AdministratorAccess-345226917840 BUDGET_ALERT_EMAIL=<your email>
+  cp infra/.env.example infra/.env   # then set your real BUDGET_ALERT_EMAIL
+  export AWS_PROFILE=AdministratorAccess-345226917840
   pnpm --filter infra exec cdk bootstrap aws://<acct>/us-east-1
   pnpm --filter infra exec cdk deploy GitHubOidcStack
   ```
