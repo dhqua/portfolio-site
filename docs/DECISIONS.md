@@ -81,6 +81,13 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 - **Tradeoff:** The URL is ugly and will change, and SPEC acceptance criterion 1 (`https://<domain>`) isn't met until Slice 0.5.
 - **Revisit:** Once the domain is registered.
 
+**D-016 — The deploy role only assumes CDK bootstrap roles; its stack is deployed by hand once** · Accepted · 2026-10-02
+
+- **What:** `GitHubOidcStack` creates the GitHub OIDC provider and `portfolio-site-deploy`. The role trusts only tokens with `aud = sts.amazonaws.com` and `sub = repo:dhqua/portfolio-site:ref:refs/heads/main`, and its only permission is `sts:AssumeRole` on `cdk-hnb659fds-*` roles in this account and region. The owner deploys the stack locally, once, after `cdk bootstrap`.
+- **Why:** CI can't create the role it authenticates with. Delegating to the bootstrap roles keeps the deploy role tiny and lets the CDK CLI choose the right role for each step. Using the native `AWS::IAM::OIDCProvider` avoids a custom-resource Lambda, and without thumbprints IAM checks GitHub's certificate itself.
+- **Tradeoff:** The bootstrap `cdk-hnb659fds-cfn-exec-role` has `AdministratorAccess` by default, so a compromised `main` workflow can do anything in the account. PR workflows can't assume the role. A GitHub `environment:` on the deploy job would change `sub` and break the trust, so that needs updating here first.
+- **Revisit:** Scope the bootstrap execution policy (`cdk bootstrap --cloudformation-execution-policies`) once the service list settles.
+
 **D-017 — The site bucket uses `RemovalPolicy.RETAIN`** · Accepted · 2026-10-01
 
 - **Why:** `DESTROY` on a non-empty bucket needs `autoDeleteObjects`, which adds a custom-resource Lambda and IAM role. The content is rebuilt from the repo on every deploy, so retention costs almost nothing.

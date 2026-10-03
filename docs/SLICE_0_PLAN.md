@@ -2,7 +2,7 @@
 
 ## Progress checklist
 
-**Status (2026-10-01):** Step 0, PR 1, and PR 2 are done. PR 3 is open for review (branch `slice-0/infra-site-stack`). **Next: merge PR 3, then PR 4.**
+**Status (2026-10-02):** Step 0 and PRs 1–3 are done. PR 4 is open for review (branch `slice-0/github-oidc`). **Next: merge PR 4, then the owner runs the bootstrap steps, then PR 5.**
 
 - [x] **Step 0**
   - [x] Node 24 + `corepack enable` (pnpm 12.6.0)
@@ -10,20 +10,23 @@
   - [x] `aws sso login` (owner confirmed 2026-10-01)
 - [x] **PR 1: Monorepo tooling** — merged (#1)
 - [x] **PR 2: `apps/web` "Hello" page** — merged (#2)
-- [ ] **PR 3: `infra`: SiteStack + Budgets** — PR open, not merged
+- [x] **PR 3: `infra`: SiteStack + Budgets** — merged (#4)
   - [x] `infra` package, `bin/app.ts` config parsing and tags, `synth` script, `'infra'` in Vitest projects
   - [x] SiteStack: private S3, CloudFront + OAC, rewrite function, BucketDeployment, Budgets, `DistributionUrl` output
   - [x] Assertion tests; removing `blockPublicAccess` turns a test red
   - [x] Domain hook moved to Slice 0.5 (see notes)
-- [ ] **PR 4: `infra`: GitHubOidcStack**
+- [ ] **PR 4: `infra`: GitHubOidcStack** — PR open, not merged
+  - [x] CDK feature flags set to recommended (first commit, before any deploy)
+  - [x] GitHubOidcStack: native OIDC provider, `portfolio-site-deploy` role, `DeployRoleArn` output
+  - [x] Assertion tests; widening `sub` or adding an action turns them red
   - [ ] Owner runs `cdk bootstrap` + `cdk deploy GitHubOidcStack` locally
   - [ ] Owner sets repo variables `AWS_DEPLOY_ROLE_ARN` and `BUDGET_ALERT_EMAIL`
 - [ ] **PR 5: CI/CD** (branch protection already exists; only add the required `ci` check)
 - [ ] **Docs** (see "Docs" section below)
-  - [ ] DECISIONS additions (D-015, D-017, D-018 added in PR 3; D-016 comes with PR 4)
+  - [x] DECISIONS additions (D-015, D-017, D-018 added in PR 3; D-016 added in PR 4)
   - [x] SPEC open question "Public or private repo?" resolved as public
   - [x] CLAUDE.md: `pnpm build` / `pnpm format` commands, "imports this file" line fixed
-  - [ ] CLAUDE.md: one-time bootstrap note
+  - [x] CLAUDE.md: one-time bootstrap note
 - [ ] **Verification** (see "Verification" section below)
 
 **Notes from work so far**
@@ -38,7 +41,12 @@
   - CloudFront maps both 403 and 404 to `/404.html` (S3 returns 403 for missing keys under OAC). The rewrite function also handles `/about` as well as `/about/`.
   - `CfnBudget` isn't reached by `Tags.of()`, so the stack copies its tags into `ResourceTags`. The app passes the tags as stack props for this reason.
   - `synth` requires `BUDGET_ALERT_EMAIL` to be set, including locally.
-  - `infra/cdk.json` sets no CDK feature flags (`cdk synth` warns about 83 of them). Decide whether to adopt the recommended set before the first deploy in PR 5, because changing flags later can replace resources.
+  - `infra/cdk.json` set no CDK feature flags. Resolved in PR 4, below.
+- PR 4 departures:
+  - The first commit sets every CDK feature flag to its recommended value, because PR 4, not PR 5, has the first deploy. The CLI only sets boolean flags, so `target-partitions` and `defaultCrossStackReferences` were added by hand. SiteStack's template changed only cosmetically.
+  - The OIDC provider uses `OidcProviderNative` (plain `AWS::IAM::OIDCProvider`, no thumbprints) instead of the custom-resource `OpenIdConnectProvider`.
+  - The repo comes from `GITHUB_REPOSITORY` (GitHub Actions sets it), defaulting to `dhqua/portfolio-site`, so the trust isn't hardcoded in the stack.
+  - The app synthesizes both stacks, so the bootstrap deploy also needs `BUDGET_ALERT_EMAIL` set.
 
 **Instructions for agents**
 
@@ -110,6 +118,7 @@ What we agreed:
 - Assertion tests cover the trust conditions and confirm the policy contains no action other than `sts:AssumeRole`.
 - **You run this once, locally, with the SSO profile.** It's the only local deploy, and it's needed because CI can't create its own role:
   ```
+  export AWS_PROFILE=AdministratorAccess-345226917840 BUDGET_ALERT_EMAIL=<your email>
   pnpm --filter infra exec cdk bootstrap aws://<acct>/us-east-1
   pnpm --filter infra exec cdk deploy GitHubOidcStack
   ```
