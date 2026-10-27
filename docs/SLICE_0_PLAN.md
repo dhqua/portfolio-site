@@ -2,7 +2,7 @@
 
 ## Progress checklist
 
-**Status (2026-10-02):** Step 0 and PRs 1–3 are done. PR 4 is open for review (branch `slice-0/github-oidc`). **Next: merge PR 4, then the owner runs the bootstrap steps, then PR 5.**
+**Status (2026-10-26):** Step 0 and PRs 1–4 are done, and the owner bootstrap is complete. PR 5 is open for review (branch `slice-0/ci-cd`). **Next: merge PR 5, then add the required `ci` check and run the verification steps.**
 
 - [x] **Step 0**
   - [x] Node 24 + `corepack enable` (pnpm 12.6.0)
@@ -15,13 +15,15 @@
   - [x] SiteStack: private S3, CloudFront + OAC, rewrite function, BucketDeployment, Budgets, `DistributionUrl` output
   - [x] Assertion tests; removing `blockPublicAccess` turns a test red
   - [x] Domain hook moved to Slice 0.5 (see notes)
-- [ ] **PR 4: `infra`: GitHubOidcStack** — PR open, not merged
+- [x] **PR 4: `infra`: GitHubOidcStack** — merged (#5)
   - [x] CDK feature flags set to recommended (first commit, before any deploy)
   - [x] GitHubOidcStack: native OIDC provider, `portfolio-site-deploy` role, `DeployRoleArn` output
   - [x] Assertion tests; widening `sub` or adding an action turns them red
-  - [ ] Owner runs `cdk bootstrap` + `cdk deploy GitHubOidcStack` locally
-  - [ ] Owner sets repo variables `AWS_DEPLOY_ROLE_ARN` and `BUDGET_ALERT_EMAIL`
-- [ ] **PR 5: CI/CD** (branch protection already exists; only add the required `ci` check)
+  - [x] Owner runs `cdk bootstrap` + `cdk deploy GitHubOidcStack` locally
+  - [x] Owner sets repo variables `AWS_DEPLOY_ROLE_ARN` and `BUDGET_ALERT_EMAIL`
+- [ ] **PR 5: CI/CD** — PR open, not merged
+  - [x] `.github/workflows/ci.yml`: `ci` job (lint, typecheck, test, build, synth) and `deploy` job on push to `main`
+  - [ ] Required `ci` status check added to the `main-trunk` ruleset (after merge)
 - [ ] **Docs** (see "Docs" section below)
   - [x] DECISIONS additions (D-015, D-017, D-018 added in PR 3; D-016 added in PR 4)
   - [x] SPEC open question "Public or private repo?" resolved as public
@@ -47,6 +49,11 @@
   - The OIDC provider uses `OidcProviderNative` (plain `AWS::IAM::OIDCProvider`, no thumbprints) instead of the custom-resource `OpenIdConnectProvider`.
   - The repo comes from `GITHUB_REPOSITORY` (GitHub Actions sets it), defaulting to `dhqua/portfolio-site`, so the trust isn't hardcoded in the stack.
   - The app synthesizes both stacks, so the bootstrap deploy also needs `BUDGET_ALERT_EMAIL`, which comes from `infra/.env`.
+- PR 5 departures:
+  - CI and deploy are two jobs in a single `ci.yml` (`deploy` has `needs: ci`), not a separate `deploy.yml` triggered by `workflow_run`. A deploy can't start unless the same commit's checks passed, and there's one less workflow to keep in sync.
+  - Every third-party action is pinned to a full commit SHA, with the version in a comment.
+  - The deploy runs `pnpm build` before `cdk deploy`, because `BucketDeployment` uploads `apps/web/out`.
+  - The SSO profile name in this doc was replaced with a placeholder because the repo is public.
 
 **Instructions for agents**
 
@@ -71,7 +78,7 @@ What we agreed:
 ## Step 0: You do this locally (no PR)
 
 1. `brew install node@24 && brew link --overwrite node@24`. This replaces the Node v8 in `/usr/local/bin`. Then run `corepack enable`.
-2. `aws sso login --profile AdministratorAccess-345226917840` so the credentials work for the bootstrap in PR 4.
+2. `aws sso login --profile <your-admin-sso-profile>` so the credentials work for the bootstrap in PR 4.
 
 ## PRs (each about 300 lines or fewer, excluding the lockfile)
 
@@ -119,7 +126,7 @@ What we agreed:
 - **You run this once, locally, with the SSO profile.** It's the only local deploy, and it's needed because CI can't create its own role:
   ```
   cp infra/.env.example infra/.env   # then set your real BUDGET_ALERT_EMAIL
-  export AWS_PROFILE=AdministratorAccess-345226917840
+  export AWS_PROFILE=<your-admin-sso-profile>
   pnpm --filter infra exec cdk bootstrap aws://<acct>/us-east-1
   pnpm --filter infra exec cdk deploy GitHubOidcStack
   ```
