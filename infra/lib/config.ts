@@ -9,6 +9,9 @@ const configSchema = z.object({
     .string()
     .regex(/^[\w.-]+\/[\w.-]+$/)
     .default('dhqua/portfolio-site'),
+  // Numeric IDs in GitHub's immutable OIDC subject (D-016). GitHub Actions sets both.
+  GITHUB_REPOSITORY_OWNER_ID: z.string().regex(/^\d+$/).default('14855311'),
+  GITHUB_REPOSITORY_ID: z.string().regex(/^\d+$/).default('1386678984'),
   // Set by the CDK CLI from the active credentials. Unset means an environment-agnostic synth.
   CDK_DEFAULT_ACCOUNT: z
     .string()

@@ -23,4 +23,6 @@ new GitHubOidcStack(app, 'GitHubOidcStack', {
   tags,
   env,
   githubRepository: config.GITHUB_REPOSITORY,
+  githubOwnerId: config.GITHUB_REPOSITORY_OWNER_ID,
+  githubRepositoryId: config.GITHUB_REPOSITORY_ID,
 });

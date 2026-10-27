@@ -21,6 +21,8 @@ beforeAll(() => {
     tags,
     env: { account, region: 'us-east-1' },
     githubRepository: 'dhqua/portfolio-site',
+    githubOwnerId: '14855311',
+    githubRepositoryId: '1386678984',
   });
   template = Template.fromStack(stack);
 });
@@ -50,7 +52,7 @@ describe('GitHubOidcStack', () => {
               StringEquals: {
                 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
                 'token.actions.githubusercontent.com:sub':
-                  'repo:dhqua/portfolio-site:ref:refs/heads/main',
+                  'repo:dhqua@14855311/portfolio-site@1386678984:ref:refs/heads/main',
               },
             },
           },
