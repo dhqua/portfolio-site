@@ -16,6 +16,10 @@ new SiteStack(app, 'SiteStack', {
   env,
   siteContentPath: join(import.meta.dirname, '../../apps/web/out'),
   budgetAlertEmail: config.BUDGET_ALERT_EMAIL,
+  domain:
+    config.SITE_DOMAIN && config.HOSTED_ZONE_ID
+      ? { name: config.SITE_DOMAIN, hostedZoneId: config.HOSTED_ZONE_ID }
+      : undefined,
 });
 
 // Deployed once by hand with admin credentials; CI can't create its own role (D-016).

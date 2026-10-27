@@ -65,6 +65,6 @@ A personal site on AWS that:
 
 ## Open questions
 
-- Domain name?
+- ~~Domain name?~~ `quathomas.com`, registered through Route 53 (D-019).
 - Bedrock or Anthropic API (D-005)?
 - ~~Public or private GitHub repo?~~ Public: it's portfolio proof, and branch protection is free on public repos.

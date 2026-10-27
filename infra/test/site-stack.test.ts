@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { App, Tags } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { beforeAll, describe, expect, it } from 'vitest';
-import { BUDGET_LIMITS_USD, SiteStack } from '../lib/site-stack.ts';
+import { BUDGET_LIMITS_USD, type SiteDomain, SiteStack } from '../lib/site-stack.ts';
 
 interface CfnResource {
   Type: string;
@@ -28,11 +28,13 @@ const untaggableTypes = new Set([
   'AWS::IAM::Policy',
   'Custom::CDKBucketDeployment',
   'AWS::CDK::Metadata',
+  'AWS::Route53::RecordSet',
 ]);
 
 let template: Template;
+let domainTemplate: Template;
 
-beforeAll(() => {
+const synth = (domain?: SiteDomain): Template => {
   // A stand-in for apps/web/out so the test doesn't depend on a web build.
   const siteContentPath = mkdtempSync(join(tmpdir(), 'site-'));
   writeFileSync(join(siteContentPath, 'index.html'), 'Hello');
@@ -43,8 +45,14 @@ beforeAll(() => {
     tags,
     siteContentPath,
     budgetAlertEmail: 'alerts@example.com',
+    domain,
   });
-  template = Template.fromStack(stack);
+  return Template.fromStack(stack);
+};
+
+beforeAll(() => {
+  template = synth();
+  domainTemplate = synth({ name: 'example.com', hostedZoneId: 'Z0123ABC' });
 });
 
 describe('SiteStack', () => {
@@ -133,7 +141,9 @@ describe('SiteStack', () => {
   });
 
   it('tags every taggable resource with project and env', () => {
-    const resources = Object.entries(template.toJSON().Resources as Record<string, CfnResource>);
+    const resources = [template, domainTemplate].flatMap((t) =>
+      Object.entries(t.toJSON().Resources as Record<string, CfnResource>),
+    );
     for (const [id, resource] of resources) {
       if (untaggableTypes.has(resource.Type)) continue;
       const props = resource.Properties ?? {};
@@ -148,5 +158,59 @@ describe('SiteStack', () => {
 
   it('outputs the distribution URL', () => {
     template.hasOutput('DistributionUrl', {});
+  });
+});
+
+describe('SiteStack with a custom domain', () => {
+  it('serves nothing but the CloudFront URL when no domain is set', () => {
+    template.resourceCountIs('AWS::CertificateManager::Certificate', 0);
+    template.resourceCountIs('AWS::Route53::RecordSet', 0);
+  });
+
+  it('issues one DNS-validated certificate for the apex and www', () => {
+    domainTemplate.resourceCountIs('AWS::CertificateManager::Certificate', 1);
+    domainTemplate.hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'example.com',
+      SubjectAlternativeNames: ['www.example.com'],
+      ValidationMethod: 'DNS',
+      DomainValidationOptions: Match.arrayWith([
+        { DomainName: 'example.com', HostedZoneId: 'Z0123ABC' },
+        { DomainName: 'www.example.com', HostedZoneId: 'Z0123ABC' },
+      ]),
+    });
+  });
+
+  it('serves both names over TLS 1.2 or newer', () => {
+    const [certificateId] = Object.keys(
+      domainTemplate.findResources('AWS::CertificateManager::Certificate'),
+    );
+    domainTemplate.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        Aliases: ['example.com', 'www.example.com'],
+        ViewerCertificate: {
+          AcmCertificateArn: { Ref: certificateId },
+          MinimumProtocolVersion: 'TLSv1.2_2021',
+          SslSupportMethod: 'sni-only',
+        },
+      }),
+    });
+  });
+
+  it('points A and AAAA alias records for both names at the distribution', () => {
+    domainTemplate.resourceCountIs('AWS::Route53::RecordSet', 4);
+    for (const Type of ['A', 'AAAA']) {
+      for (const Name of ['example.com.', 'www.example.com.']) {
+        domainTemplate.hasResourceProperties('AWS::Route53::RecordSet', {
+          Type,
+          Name,
+          HostedZoneId: 'Z0123ABC',
+          AliasTarget: Match.objectLike({ HostedZoneId: Match.anyValue() }),
+        });
+      }
+    }
+  });
+
+  it('outputs the site URL', () => {
+    domainTemplate.hasOutput('SiteUrl', { Value: 'https://example.com' });
   });
 });

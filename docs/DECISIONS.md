@@ -75,7 +75,7 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 - **Why:** typescript-eslint supports TypeScript `<6.1`, so TS 7 would break type-aware linting. ESLint's `unstable_native_nodejs_ts_config` flag uses Node 24's type stripping, which avoids adding `jiti`.
 - **Revisit:** Move to TS 7 when typescript-eslint supports it. Drop the flag once it's stable or becomes the default.
 
-**D-015 — Serve on the default CloudFront URL until a domain exists** · Accepted · 2026-10-01
+**D-015 — Serve on the default CloudFront URL until a domain exists** · **Superseded by D-019** · 2026-10-01
 
 - **Why:** No domain is registered yet, and it shouldn't block the walking skeleton. Route 53 and ACM arrive in a small follow-up ("Slice 0.5").
 - **Tradeoff:** The URL is ugly and will change, and SPEC acceptance criterion 1 (`https://<domain>`) isn't met until Slice 0.5.
@@ -98,3 +98,10 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 - **What:** The CDK app runs as `node bin/app.ts` using Node 24 type stripping. Relative imports use `.ts` extensions (`allowImportingTsExtensions`), and `erasableSyntaxOnly` rejects syntax Node can't strip, such as enums. `infra/tsconfig.json` turns off `exactOptionalPropertyTypes`.
 - **Why:** This avoids adding `tsx` or `ts-node`, the same reasoning as D-014. `aws-cdk-lib`'s own declarations fail under `exactOptionalPropertyTypes` (for example, `Bucket` isn't assignable to `IBucket`).
 - **Revisit:** Turn the flag back on if `aws-cdk-lib`'s types become compatible.
+
+**D-019 — Serve `quathomas.com` and `www` from the registrar-created hosted zone, passed by ID** · Accepted · 2026-10-26
+
+- **What:** SiteStack takes an optional domain from `SITE_DOMAIN` and `HOSTED_ZONE_ID` (both or neither). It imports the existing public zone with `HostedZone.fromHostedZoneAttributes`, issues one DNS-validated ACM certificate for the apex and `www`, sets both as CloudFront aliases with TLS 1.2 (2021) minimum, and adds A/AAAA alias records. CI reads the values from repo variables, and local runs read them from `infra/.env`.
+- **Why:** Route 53 registration already created and pays for the zone, so CDK reuses it instead of owning a second one. Passing the ID instead of `fromLookup` keeps synth credential-free on PR CI and avoids committing `cdk.context.json`.
+- **Tradeoff:** The zone lives outside CDK, so deleting it by hand would break DNS. `www` serves the same content as the apex instead of redirecting to it.
+- **Revisit:** Add a `www`-to-apex redirect if duplicate URLs start to matter for SEO.
