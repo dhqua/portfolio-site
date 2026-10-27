@@ -39,6 +39,8 @@ The domain is `quathomas.com` (apex and `www`). It uses the hosted zone Route 53
 
 **Done when:** all pages render on the live site and a new MDX file shows up after a push.
 
+Progress and the PR breakdown are in `docs/SLICE_1_PLAN.md`.
+
 ## Slice 2: Private area (days 6–7)
 
 - Cognito user pool with self-signup disabled and one user (me).
