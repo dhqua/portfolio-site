@@ -2,7 +2,7 @@
 
 ## Progress checklist
 
-**Status (2026-10-26):** Step 0 and PRs 1–4 are done, and the owner bootstrap is complete. PR 5 is open for review (branch `slice-0/ci-cd`). **Next: merge PR 5, then add the required `ci` check and run the verification steps.**
+**Status (2026-10-26):** Slice 0 is done. Every PR has merged, `main` deploys through CI, and a failing `ci` check blocks merge. Next is Slice 0.5 (custom domain).
 
 - [x] **Step 0**
   - [x] Node 24 + `corepack enable` (pnpm 12.6.0)
@@ -21,15 +21,18 @@
   - [x] Assertion tests; widening `sub` or adding an action turns them red
   - [x] Owner runs `cdk bootstrap` + `cdk deploy GitHubOidcStack` locally
   - [x] Owner sets repo variables `AWS_DEPLOY_ROLE_ARN` and `BUDGET_ALERT_EMAIL`
-- [ ] **PR 5: CI/CD** — PR open, not merged
+- [x] **PR 5: CI/CD** — merged (#7), trust fix (#8)
   - [x] `.github/workflows/ci.yml`: `ci` job (lint, typecheck, test, build, synth) and `deploy` job on push to `main`
-  - [ ] Required `ci` status check added to the `main-trunk` ruleset (after merge)
-- [ ] **Docs** (see "Docs" section below)
+  - [x] Required `ci` status check added to the `main-trunk` ruleset (pinned to the GitHub Actions app)
+- [x] **Docs** (see "Docs" section below)
   - [x] DECISIONS additions (D-015, D-017, D-018 added in PR 3; D-016 added in PR 4)
   - [x] SPEC open question "Public or private repo?" resolved as public
   - [x] CLAUDE.md: `pnpm build` / `pnpm format` commands, "imports this file" line fixed
   - [x] CLAUDE.md: one-time bootstrap note
-- [ ] **Verification** (see "Verification" section below)
+- [x] **Verification** (see "Verification" section below)
+  - [x] A merge to `main` deployed SiteStack, and the CloudFront URL serves "Hello" (200) and a 404 for unknown paths
+  - [x] A throwaway PR with a Prettier violation (#9) failed `ci` with merge state `BLOCKED`, then was closed
+  - [x] The bucket-privacy assertion test exists and was proven red in PR 3
 
 **Notes from work so far**
 

@@ -30,6 +30,8 @@ Progress and the PR breakdown are in `docs/SLICE_0_PLAN.md`.
 
 **Done when:** a push to `main` goes live at `https://<domain>`.
 
+The domain is `quathomas.com` (apex and `www`). It uses the hosted zone Route 53 created at registration, passed by ID (D-019).
+
 ## Slice 1: Content site (days 4–5)
 
 - Stock template layout; Home, About, and Projects pages.
