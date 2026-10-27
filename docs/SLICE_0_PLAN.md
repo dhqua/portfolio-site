@@ -54,6 +54,7 @@
   - Every third-party action is pinned to a full commit SHA, with the version in a comment.
   - The deploy runs `pnpm build` before `cdk deploy`, because `BucketDeployment` uploads `apps/web/out`.
   - The SSO profile name in this doc was replaced with a placeholder because the repo is public.
+  - The first deploy failed `AssumeRoleWithWebIdentity`. The repo uses GitHub's immutable OIDC subject (`repo:dhqua@<owner-id>/portfolio-site@<repo-id>:...`), so the trust was updated to match it. The IDs come from `GITHUB_REPOSITORY_OWNER_ID` and `GITHUB_REPOSITORY_ID`, with defaults for local runs. The owner approved, and GitHubOidcStack was redeployed by hand.
 
 **Instructions for agents**
 

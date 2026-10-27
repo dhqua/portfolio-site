@@ -10,6 +10,9 @@ import type { Construct } from 'constructs';
 export interface GitHubOidcStackProps extends StackProps {
   /** `owner/name` of the only repository allowed to assume the deploy role. */
   readonly githubRepository: string;
+  /** Numeric owner and repository IDs, used in GitHub's immutable OIDC subject. */
+  readonly githubOwnerId: string;
+  readonly githubRepositoryId: string;
 }
 
 const GITHUB_OIDC_HOST = 'token.actions.githubusercontent.com';
@@ -20,6 +23,11 @@ const CDK_BOOTSTRAP_QUALIFIER = 'hnb659fds';
 export class GitHubOidcStack extends Stack {
   constructor(scope: Construct, id: string, props: GitHubOidcStackProps) {
     super(scope, id, props);
+
+    // The repo uses GitHub's immutable subject (`owner@id/name@id`), so the trust follows the
+    // repository's identity: a renamed or re-created repo with the same name can't match it.
+    const ownerAndName = props.githubRepository.replace('/', `@${props.githubOwnerId}/`);
+    const subject = `repo:${ownerAndName}@${props.githubRepositoryId}`;
 
     // Native AWS::IAM::OIDCProvider, so no custom-resource Lambda. Without thumbprints,
     // IAM verifies GitHub's certificate chain itself.
@@ -34,7 +42,7 @@ export class GitHubOidcStack extends Stack {
       assumedBy: new WebIdentityPrincipal(provider.oidcProviderArn, {
         StringEquals: {
           [`${GITHUB_OIDC_HOST}:aud`]: 'sts.amazonaws.com',
-          [`${GITHUB_OIDC_HOST}:sub`]: `repo:${props.githubRepository}:ref:refs/heads/main`,
+          [`${GITHUB_OIDC_HOST}:sub`]: `${subject}:ref:refs/heads/main`,
         },
       }),
     });
