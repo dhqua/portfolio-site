@@ -111,3 +111,10 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 - **Why:** Components are copied into the repo instead of added as a dependency, and shadcn/ui is already in the stack. This avoids vendoring a whole third-party template.
 - **Tradeoff:** The look is generic, which SPEC accepts. The CLI's default `cn` helper imports a third-party `cn` package, so `src/lib/utils.ts` uses `clsx` + `tailwind-merge` instead, and any component added later needs the same import fixed.
 - **Revisit:** If the design needs more than a one-afternoon pass.
+
+**D-020 — MDX through `@next/mdx` with YAML frontmatter, validated by a zod schema in `packages/shared`** · Accepted · 2026-10-27
+
+- **What:** Write-ups are `content/projects/<slug>.mdx` with a YAML block (`title`, `summary`, `date`, `tags`, optional `draft`). `remark-frontmatter` and `remark-mdx-frontmatter` expose it as a `frontmatter` export, which `apps/web/src/lib/projects.ts` parses with `projectFrontmatterSchema`. `parseProjectFrontmatter` in `packages/shared` reads the raw file, so a Vitest test can check every write-up without compiling MDX, and Slice 3 can reuse it.
+- **Why:** It's the supported Next path, costs nothing at runtime on a static export, and keeps the raw files readable for the assistant (D-010).
+- **Tradeoff:** Turbopack takes plugins by name only, so plugin options must be serializable. `yaml` is added to `packages/shared` for the raw-file parser, and `apps/web` now depends on `@portfolio/shared` (`transpilePackages`).
+- **Revisit:** If the content outgrows a folder of files and needs a content layer.

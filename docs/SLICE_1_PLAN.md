@@ -2,27 +2,27 @@
 
 ## Progress checklist
 
-**Status (2026-10-27):** Plan merged (#12). PR 1 is open for review (branch `slice-1/layout`). **Next: merge PR 1, then start PR 2.**
+**Status (2026-10-27):** PR 1 is merged (#13). PR 2 is open for review (branch `slice-1/mdx-projects`). **Next: merge PR 2, then start PR 3.**
 
-- [x] **PR 1: Layout and pages** — PR open, not merged
+- [x] **PR 1: Layout and pages** — merged (#13)
   - [x] shadcn/ui init (`components.json`, `cn` helper, theme tokens) plus only the primitives used
   - [x] Site header and footer in `layout.tsx`, with a metadata title template
   - [x] Home, About, and `not-found` pages with marked placeholder copy
   - [x] Render tests replace the "Hello" test
   - [x] CI smoke test also checks `/about/`
-- [ ] **PR 2: MDX pipeline**
-  - [ ] `projectFrontmatterSchema` in `packages/shared`, with unit tests
-  - [ ] `apps/web/src/lib/projects.ts` loader, with sort and draft-filter tests
-  - [ ] `@next/mdx` config, `mdx-components.tsx`, and typography styles
-  - [ ] `/projects/` index and `/projects/[slug]/` pages; Home lists the latest 3
-  - [ ] `content/projects/portfolio-site.mdx` stub; a test proves every write-up parses
-  - [ ] CI smoke test also checks `/projects/` and `/projects/portfolio-site/`
+- [x] **PR 2: MDX pipeline** — PR open, not merged
+  - [x] `projectFrontmatterSchema` in `packages/shared`, with unit tests
+  - [x] `apps/web/src/lib/projects.ts` loader, with sort and draft-filter tests
+  - [x] `@next/mdx` config, `mdx-components.tsx`, and typography styles
+  - [x] `/projects/` index and `/projects/[slug]/` pages; Home lists the latest 3
+  - [x] `content/projects/portfolio-site.mdx` stub; a test proves every write-up parses
+  - [x] CI smoke test also checks `/projects/` and `/projects/portfolio-site/`
 - [ ] **PR 3: Content-only write-up**
   - [ ] An MDX-only change (no code) merges and shows up on the live site
 - [ ] **Docs** (see "Docs" section below)
   - [x] D-021 (shadcn/ui as the stock template)
-  - [ ] D-020 (MDX approach), added in PR 2
-  - [ ] CLAUDE.md: shadcn `components/ui/` and the `content/projects` frontmatter rule
+  - [x] D-020 (MDX approach)
+  - [x] CLAUDE.md: shadcn `components/ui/` and the `content/projects` frontmatter rule
   - [x] SLICES.md points to this plan
 - [ ] **Verification** (see "Verification" section below)
 
@@ -33,6 +33,11 @@
   - shadcn's generated `cn` imports a third-party `cn` npm package. `src/lib/utils.ts` uses `clsx` + `tailwind-merge` instead (D-021).
   - `apps/web/tsconfig.json` gained an `@/*` path alias (shadcn requires one), and `apps/web/vitest.config.ts` mirrors it so tests resolve it.
   - `next/link` drops the trailing slash when rendered outside the Next build, so tests match `/projects/?`. The built HTML has the slash.
+- PR 2 departures:
+  - The Turbopack root risk didn't materialize: `next build` imports `.mdx` from `content/` with no `turbopack.root` change.
+  - Added `yaml` to `packages/shared` and a `parseProjectFrontmatter` helper, so the content test reads raw files without compiling MDX. Pure sort/filter helpers live in `lib/project-list.ts`, apart from the MDX-importing loader, so Vitest never loads `.mdx`.
+  - `apps/web` now depends on `@portfolio/shared` and sets `transpilePackages`.
+  - Proved the content test red by deleting `title` from the write-up.
 - Owner choices: shadcn/ui + `@tailwindcss/typography` as the stock template, and placeholder Home/About copy that the owner replaces later.
 
 **Instructions for agents**
