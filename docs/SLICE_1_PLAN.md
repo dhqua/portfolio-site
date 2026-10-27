@@ -2,14 +2,14 @@
 
 ## Progress checklist
 
-**Status (2026-10-27):** Plan written. Next: PR 1.
+**Status (2026-10-27):** Plan merged (#12). PR 1 is open for review (branch `slice-1/layout`). **Next: merge PR 1, then start PR 2.**
 
-- [ ] **PR 1: Layout and pages**
-  - [ ] shadcn/ui init (`components.json`, `cn` helper, theme tokens) plus only the primitives used
-  - [ ] Site header and footer in `layout.tsx`, with a metadata title template
-  - [ ] Home, About, and `not-found` pages with marked placeholder copy
-  - [ ] Render tests replace the "Hello" test
-  - [ ] CI smoke test also checks `/about/`
+- [x] **PR 1: Layout and pages** — PR open, not merged
+  - [x] shadcn/ui init (`components.json`, `cn` helper, theme tokens) plus only the primitives used
+  - [x] Site header and footer in `layout.tsx`, with a metadata title template
+  - [x] Home, About, and `not-found` pages with marked placeholder copy
+  - [x] Render tests replace the "Hello" test
+  - [x] CI smoke test also checks `/about/`
 - [ ] **PR 2: MDX pipeline**
   - [ ] `projectFrontmatterSchema` in `packages/shared`, with unit tests
   - [ ] `apps/web/src/lib/projects.ts` loader, with sort and draft-filter tests
@@ -20,7 +20,8 @@
 - [ ] **PR 3: Content-only write-up**
   - [ ] An MDX-only change (no code) merges and shows up on the live site
 - [ ] **Docs** (see "Docs" section below)
-  - [ ] D-020 (MDX approach) and D-021 (shadcn/ui as the stock template)
+  - [x] D-021 (shadcn/ui as the stock template)
+  - [ ] D-020 (MDX approach), added in PR 2
   - [ ] CLAUDE.md: shadcn `components/ui/` and the `content/projects` frontmatter rule
   - [x] SLICES.md points to this plan
 - [ ] **Verification** (see "Verification" section below)
@@ -28,6 +29,10 @@
 **Notes from work so far**
 
 - Slice 0.5 is done (#10): the site serves `https://quathomas.com` and `www`.
+- PR 1 departures:
+  - shadcn's generated `cn` imports a third-party `cn` npm package. `src/lib/utils.ts` uses `clsx` + `tailwind-merge` instead (D-021).
+  - `apps/web/tsconfig.json` gained an `@/*` path alias (shadcn requires one), and `apps/web/vitest.config.ts` mirrors it so tests resolve it.
+  - `next/link` drops the trailing slash when rendered outside the Next build, so tests match `/projects/?`. The built HTML has the slash.
 - Owner choices: shadcn/ui + `@tailwindcss/typography` as the stock template, and placeholder Home/About copy that the owner replaces later.
 
 **Instructions for agents**

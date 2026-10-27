@@ -22,7 +22,7 @@ Instructions for AI coding agents working in this repo.
 ## Repo layout
 
 ```
-apps/web/            Next.js site
+apps/web/            Next.js site (shadcn/ui components in src/components/ui/)
 services/<name>/     Lambda handlers
 packages/shared/     shared types and zod schemas
 infra/               CDK app and stacks
