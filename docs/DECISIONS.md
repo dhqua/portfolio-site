@@ -105,3 +105,9 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 - **Why:** Route 53 registration already created and pays for the zone, so CDK reuses it instead of owning a second one. Passing the ID instead of `fromLookup` keeps synth credential-free on PR CI and avoids committing `cdk.context.json`.
 - **Tradeoff:** The zone lives outside CDK, so deleting it by hand would break DNS. `www` serves the same content as the apex instead of redirecting to it.
 - **Revisit:** Add a `www`-to-apex redirect if duplicate URLs start to matter for SEO.
+
+**D-021 — shadcn/ui is the "stock template", time-boxed to one afternoon** · Accepted · 2026-10-27
+
+- **Why:** Components are copied into the repo instead of added as a dependency, and shadcn/ui is already in the stack. This avoids vendoring a whole third-party template.
+- **Tradeoff:** The look is generic, which SPEC accepts. The CLI's default `cn` helper imports a third-party `cn` package, so `src/lib/utils.ts` uses `clsx` + `tailwind-merge` instead, and any component added later needs the same import fixed.
+- **Revisit:** If the design needs more than a one-afternoon pass.
