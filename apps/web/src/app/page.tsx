@@ -9,9 +9,9 @@ const HomePage = async () => {
     <main className="space-y-8">
       <section className="space-y-6">
         <h1 className="text-4xl font-semibold">Hi, I&apos;m Qua.</h1>
-        {/* PLACEHOLDER: owner replaces */}
         <p className="text-muted-foreground text-lg">
-          I build a new project every month and write up what I learned. This site collects them.
+          I build one project a month and write up the decisions, tradeoffs, and lessons. Each is a
+          small system that actually ships.
         </p>
         <Button asChild>
           <Link href="/projects/">See projects</Link>
