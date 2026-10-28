@@ -20,7 +20,7 @@ vi.mock('@/lib/projects', () => ({
 describe('HomePage', () => {
   it('renders the intro heading, a link to Projects, and the latest projects', async () => {
     const html = renderToStaticMarkup(await HomePage());
-    expect(html).toMatch(/<h1[^>]*>Hi, I(&#x27;|')m Qua\.<\/h1>/);
+    expect(html).toMatch(/<h1[^>]*>Hey, I(&#x27;|')m Qua\.<\/h1>/);
     expect(html).toMatch(/<a[^>]*href="\/projects\/?"/);
     expect(html).toMatch(/href="\/projects\/demo\/?"/);
     expect(html).toContain('Demo project');

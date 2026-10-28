@@ -2,7 +2,7 @@
 
 ## Progress checklist
 
-**Status (2026-10-27):** PR 1 is merged (#13). PR 2 is open for review (branch `slice-1/mdx-projects`). **Next: merge PR 2, then start PR 3.**
+**Status (2026-10-27):** PRs 1 and 2 are merged (#13, #14). PR 3 is open for review (branch `slice-1/first-writeup`). **Next: merge PR 3, then check the live site and run the verification steps.**
 
 - [x] **PR 1: Layout and pages** — merged (#13)
   - [x] shadcn/ui init (`components.json`, `cn` helper, theme tokens) plus only the primitives used
@@ -10,16 +10,17 @@
   - [x] Home, About, and `not-found` pages with marked placeholder copy
   - [x] Render tests replace the "Hello" test
   - [x] CI smoke test also checks `/about/`
-- [x] **PR 2: MDX pipeline** — PR open, not merged
+- [x] **PR 2: MDX pipeline** — merged (#14)
   - [x] `projectFrontmatterSchema` in `packages/shared`, with unit tests
   - [x] `apps/web/src/lib/projects.ts` loader, with sort and draft-filter tests
   - [x] `@next/mdx` config, `mdx-components.tsx`, and typography styles
   - [x] `/projects/` index and `/projects/[slug]/` pages; Home lists the latest 3
   - [x] `content/projects/portfolio-site.mdx` stub; a test proves every write-up parses
   - [x] CI smoke test also checks `/projects/` and `/projects/portfolio-site/`
-- [ ] **PR 3: Content-only write-up**
-  - [ ] An MDX-only change (no code) merges and shows up on the live site
-- [ ] **Docs** (see "Docs" section below)
+- [ ] **PR 3: Content-only write-up** — PR open, not merged
+  - [x] Write-up and Home/About placeholder copy written
+  - [ ] The merged write-up shows up on the live site and on `/projects/`
+- [x] **Docs** (see "Docs" section below)
   - [x] D-021 (shadcn/ui as the stock template)
   - [x] D-020 (MDX approach)
   - [x] CLAUDE.md: shadcn `components/ui/` and the `content/projects` frontmatter rule
@@ -38,6 +39,8 @@
   - Added `yaml` to `packages/shared` and a `parseProjectFrontmatter` helper, so the content test reads raw files without compiling MDX. Pure sort/filter helpers live in `lib/project-list.ts`, apart from the MDX-importing loader, so Vitest never loads `.mdx`.
   - `apps/web` now depends on `@portfolio/shared` and sets `transpilePackages`.
   - Proved the content test red by deleting `title` from the write-up.
+- PR 3 departures:
+  - The owner asked for the About page, Home intro, and write-up to be written now from their resume (kept out of the repo). The copy names skills and value delivered, never employers. That makes PR 3 more than `content/`, so the "MDX-only" proof is the write-up change itself.
 - Owner choices: shadcn/ui + `@tailwindcss/typography` as the stock template, and placeholder Home/About copy that the owner replaces later.
 
 **Instructions for agents**

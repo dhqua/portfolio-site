@@ -1,16 +1,38 @@
 ---
 title: Portfolio site
-summary: A serverless personal site and project platform on AWS, built in public from a written spec.
+summary: A serverless site and project platform on AWS, built from a written spec with infrastructure as code, security properties proven by tests, and no stored credentials.
 date: 2026-10-27
-tags: [aws, cdk, nextjs]
+tags: [aws, cdk, cloudfront, github-actions, nextjs]
 ---
 
-This site is the first project: a static Next.js export on S3 and CloudFront, defined entirely in AWS CDK and deployed from GitHub Actions with no long-lived keys.
+This is the first project on the site. I treated it as a small production system rather than a demo: a written spec, a build order, a decision log, and every change reviewed through a pull request before it deploys.
 
-{/* PLACEHOLDER: owner expands this write-up in the content-only PR */}
+## What I built
 
-## What's here so far
+- A static Next.js site on a private S3 bucket, served only through CloudFront, on a custom domain over HTTPS.
+- All infrastructure in AWS CDK (TypeScript). GitHub Actions deploys `main` by assuming an IAM role through OIDC, so no AWS keys are stored anywhere.
+- Budget alerts at $10 and $25, defined in code next to the resources they watch.
+- Write-ups as MDX files checked against a schema, so adding a project is a content-only pull request.
 
-- A private S3 bucket served only through CloudFront.
-- Budget alerts at $10 and $25.
-- Every change reaches `main` through a pull request and CI.
+## Decisions that mattered
+
+- **Security properties are tests.** CDK assertion tests check that the bucket blocks public access, that only this CloudFront distribution can read it, that log groups keep 14 days, and that the deploy role can do nothing except assume the CDK bootstrap roles. Weakening any of these turns a test red.
+- **A deliberately small deploy role.** It trusts only `main` on this repository and holds a single permission. The tradeoff is written down: the bootstrap execution role is broad, so a compromised `main` workflow could reach the whole account. Pull request workflows cannot assume the role at all.
+- **Static export over Amplify or server rendering.** It is cheaper, it exposes the underlying services I wanted to learn, and it keeps idle cost near zero. A static site cannot gate pages, so private content will only ever come from an authenticated API.
+- **A decision log.** Each choice records why, what it costs, and when to revisit it, so I can defend it later instead of rediscovering it.
+
+## What went wrong, and what I took from it
+
+- The first deploy failed to assume its role. The repository uses GitHub's immutable OIDC subject, which includes numeric owner and repository IDs, so my trust condition never matched. I fixed it by reading the real token claims instead of trusting my assumption. The trust policy is the security boundary, so it is worth getting exactly right.
+- Behind CloudFront's origin access control, S3 answers a missing key with 403, not 404. Both now map to the custom 404 page.
+- I built much of this with an AI coding agent. Small pull requests, a review checklist, and a rule that I must be able to explain every IAM change before merging kept that fast without making it opaque.
+
+## Why it matters
+
+My day-to-day work is shipping AI-enabled workflows and the integrations behind them, which means working through security review, vendor APIs, and stakeholder expectations. This project applies the same habits to my own infrastructure: least privilege, repeatable deploys, cost limits from day one, and tradeoffs written down.
+
+## Cost and what's next
+
+The design target is $10 a month or less, with nothing billed while idle: no NAT gateways, load balancers, or databases. I'll confirm the real figure in Cost Explorer after the first full month.
+
+Next up is a private area behind sign-in, then an "Ask about my work" assistant that answers from these write-ups, cites its source, and says so when it doesn't know.
