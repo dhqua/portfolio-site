@@ -8,7 +8,7 @@ const HomePage = async () => {
   return (
     <main className="space-y-8">
       <section className="space-y-6">
-        <h1 className="text-4xl font-semibold">Hi, I&apos;m Qua.</h1>
+        <h1 className="text-4xl font-semibold">Hey, I&apos;m Qua.</h1>
         <p className="text-muted-foreground text-lg">
           I build one project a month and write up the decisions, tradeoffs, and lessons. Each is a
           small system that actually ships.
