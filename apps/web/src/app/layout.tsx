@@ -10,7 +10,7 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: { default: 'Qua Thomas', template: '%s · Qua Thomas' },
-  description: 'Monthly projects and write-ups.',
+  description: 'Projects and write-ups on the decisions, tradeoffs, and lessons behind them.',
 };
 
 const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => (
