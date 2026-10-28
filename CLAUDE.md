@@ -26,7 +26,7 @@ apps/web/            Next.js site (shadcn/ui components in src/components/ui/)
 services/<name>/     Lambda handlers
 packages/shared/     shared types and zod schemas
 infra/               CDK app and stacks
-content/projects/    MDX write-ups (also the assistant's knowledge base)
+content/projects/    MDX write-ups (also the assistant's knowledge base); each needs valid YAML frontmatter (title, summary, date, tags), enforced by a test
 evals/               assistant eval set and runner
 docs/                SPEC.md, SLICES.md, DECISIONS.md
 ```

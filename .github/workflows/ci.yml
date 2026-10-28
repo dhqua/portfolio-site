@@ -64,7 +64,7 @@ jobs:
           for key in DistributionUrl SiteUrl; do
             url=$(jq -r ".SiteStack.$key // empty" infra/cdk-outputs.json)
             [ -z "$url" ] && continue
-            for path in / /about/; do
+            for path in / /about/ /projects/ /projects/portfolio-site/; do
               curl -fsS -o /dev/null --retry 5 --retry-delay 10 --retry-all-errors "$url$path"
             done
             echo "Live at $url" >> "$GITHUB_STEP_SUMMARY"
