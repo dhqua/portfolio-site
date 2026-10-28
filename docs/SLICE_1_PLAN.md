@@ -2,7 +2,7 @@
 
 ## Progress checklist
 
-**Status (2026-10-27):** PRs 1 and 2 are merged (#13, #14). PR 3 is open for review (branch `slice-1/first-writeup`). **Next: merge PR 3, then check the live site and run the verification steps.**
+**Status (2026-10-27):** Slice 1 is done. All three PRs are merged (#13, #14, #15), CI deployed them, and the pages render on `https://quathomas.com`. Next is Slice 2 (private area).
 
 - [x] **PR 1: Layout and pages** — merged (#13)
   - [x] shadcn/ui init (`components.json`, `cn` helper, theme tokens) plus only the primitives used
@@ -17,15 +17,18 @@
   - [x] `/projects/` index and `/projects/[slug]/` pages; Home lists the latest 3
   - [x] `content/projects/portfolio-site.mdx` stub; a test proves every write-up parses
   - [x] CI smoke test also checks `/projects/` and `/projects/portfolio-site/`
-- [ ] **PR 3: Content-only write-up** — PR open, not merged
+- [x] **PR 3: Content-only write-up** — merged (#15)
   - [x] Write-up and Home/About placeholder copy written
-  - [ ] The merged write-up shows up on the live site and on `/projects/`
+  - [x] The merged write-up shows up on the live site and on `/projects/`
 - [x] **Docs** (see "Docs" section below)
   - [x] D-021 (shadcn/ui as the stock template)
   - [x] D-020 (MDX approach)
   - [x] CLAUDE.md: shadcn `components/ui/` and the `content/projects` frontmatter rule
   - [x] SLICES.md points to this plan
-- [ ] **Verification** (see "Verification" section below)
+- [x] **Verification** (see "Verification" section below)
+  - [x] CI deployed #15; `/`, `/about/`, `/projects/` and `/projects/portfolio-site/` return 200 on `https://quathomas.com`, and `/projects/nope/` returns the styled 404
+  - [x] The live pages show the merged copy, and the write-up has a card on `/projects/`
+  - [x] The content test was proven red by deleting `title` from the write-up (PR 2)
 
 **Notes from work so far**
 
@@ -41,6 +44,7 @@
   - Proved the content test red by deleting `title` from the write-up.
 - PR 3 departures:
   - The owner asked for the About page, Home intro, and write-up to be written now from their resume (kept out of the repo). The copy names skills and value delivered, never employers. That makes PR 3 more than `content/`, so the "MDX-only" proof is the write-up change itself.
+- Done-when caveat: PR 3 edited the existing write-up alongside the copy changes in TSX, so no strictly MDX-only push or brand-new MDX file was deployed. The next project's write-up will be that proof.
 - Owner choices: shadcn/ui + `@tailwindcss/typography` as the stock template, and placeholder Home/About copy that the owner replaces later.
 
 **Instructions for agents**
