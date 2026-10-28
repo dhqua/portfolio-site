@@ -39,9 +39,11 @@ const AboutPage = () => (
     <section className="space-y-3">
       <h2 className="text-xl font-semibold">Why this site</h2>
       <p>
-        Every month I build one project and write up the decisions, tradeoffs, and mistakes. The
-        site itself is the first one: serverless on AWS, defined in code, and deployed without
-        stored credentials.
+        I love to learn, and the knowledge that sticks is the kind I apply. Building turns what I
+        read into working systems, and that hands-on experience is where the real value comes from.
+        Writing up each project&apos;s decisions, tradeoffs, and mistakes also sharpens how I
+        explain architecture to technical and non-technical audiences. The site itself is the first
+        project: serverless on AWS, defined in code, and deployed without stored credentials.
       </p>
     </section>
   </main>
