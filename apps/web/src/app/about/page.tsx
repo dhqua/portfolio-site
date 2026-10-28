@@ -28,7 +28,7 @@ const AboutPage = () => (
         </li>
         <li>
           <strong>Integration and platform work.</strong> API design with vendors, payment and
-          financial systems, and CI/CD that took days of waiting out of internal requests.
+          financial systems, and CI/CD automation.
         </li>
         <li>
           <strong>Customer discovery and communication.</strong> Interviews, roadmaps, and clear
