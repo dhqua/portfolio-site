@@ -2,6 +2,7 @@ import { join } from 'node:path';
 import { App, Tags } from 'aws-cdk-lib';
 import { loadConfig } from '../lib/config.ts';
 import { GitHubOidcStack } from '../lib/github-oidc-stack.ts';
+import { PrivateAreaStack } from '../lib/private-area-stack.ts';
 import { SiteStack } from '../lib/site-stack.ts';
 
 const config = loadConfig();
@@ -20,6 +21,22 @@ new SiteStack(app, 'SiteStack', {
     config.SITE_DOMAIN && config.HOSTED_ZONE_ID
       ? { name: config.SITE_DOMAIN, hostedZoneId: config.HOSTED_ZONE_ID }
       : undefined,
+});
+
+// Origins the site is served from. Sign-in only redirects back to these (localhost is for `pnpm dev`).
+const siteOrigins = [
+  ...(config.SITE_DOMAIN
+    ? [`https://${config.SITE_DOMAIN}`, `https://www.${config.SITE_DOMAIN}`]
+    : []),
+  'http://localhost:3000',
+];
+
+new PrivateAreaStack(app, 'PrivateAreaStack', {
+  tags,
+  env,
+  ownerEmail: config.OWNER_EMAIL,
+  authDomainPrefix: config.AUTH_DOMAIN_PREFIX,
+  siteOrigins,
 });
 
 // Deployed once by hand with admin credentials; CI can't create its own role (D-016).

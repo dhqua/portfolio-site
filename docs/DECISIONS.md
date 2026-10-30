@@ -118,3 +118,10 @@ Format: **ID — Decision** · Status · Date, followed by why, the tradeoff, an
 - **Why:** It's the supported Next path, costs nothing at runtime on a static export, and keeps the raw files readable for the assistant (D-010).
 - **Tradeoff:** Turbopack takes plugins by name only, so plugin options must be serializable. `yaml` is added to `packages/shared` for the raw-file parser, and `apps/web` now depends on `@portfolio/shared` (`transpilePackages`).
 - **Revisit:** If the content outgrows a folder of files and needs a content layer.
+
+**D-022 — Cognito managed login with authorization code + PKCE, TOTP required, owner user in CDK** · Accepted · 2026-10-30
+
+- **What:** `PrivateAreaStack` has a user pool with self-signup off and required authenticator-app MFA (no SMS, no email codes), a secretless app client limited to the code flow, a Cognito-domain managed login (v2) with default branding, and the owner as a `CfnUserPoolUser`. Cognito emails a temporary password, and the first sign-in forces a new password and TOTP enrollment. The pool is `RETAIN` with deletion protection.
+- **Why:** The hosted page handles the new-password and MFA challenges, so the static site needs no auth dependency. Keeping the user in CDK means no console clicks. SMS would bill per message and email OTP would need SES. Slice 2's done-when needs neither.
+- **Tradeoff:** Sign-in leaves `quathomas.com` for an `amazoncognito.com` page, and managed login needs the Essentials plan (free for one user, from memory; unverified). Deleting the stack leaves the pool behind.
+- **Revisit:** A custom auth domain if the redirect matters, or email OTP if a password stops being worth it.

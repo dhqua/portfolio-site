@@ -5,6 +5,16 @@ const configSchema = z
   .object({
     ENV: z.enum(['dev', 'prod']).default('prod'),
     BUDGET_ALERT_EMAIL: z.email(),
+    // The one Cognito user (Slice 2). Receives the temporary password when the pool is created.
+    OWNER_EMAIL: z.email(),
+    // Prefix of the managed login URL `<prefix>.auth.us-east-1.amazoncognito.com`. Must be unique
+    // in the region and can't contain "aws", "amazon" or "cognito".
+    AUTH_DOMAIN_PREFIX: z
+      .string()
+      .regex(/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/)
+      .refine((prefix) => !/aws|amazon|cognito/.test(prefix), {
+        message: 'Must not contain "aws", "amazon" or "cognito"',
+      }),
     // GitHub Actions sets this itself; the default covers local synth and the bootstrap deploy.
     GITHUB_REPOSITORY: z
       .string()
