@@ -43,7 +43,7 @@ pnpm lint                   # ESLint + Prettier check
 pnpm format                 # Prettier write
 pnpm typecheck
 pnpm test
-pnpm --filter infra synth   # needs BUDGET_ALERT_EMAIL: copy infra/.env.example to infra/.env
+pnpm --filter infra synth   # needs BUDGET_ALERT_EMAIL, OWNER_EMAIL, AUTH_DOMAIN_PREFIX: copy infra/.env.example to infra/.env
 pnpm eval                   # run assistant evals
 ```
 

@@ -2,14 +2,14 @@
 
 ## Progress checklist
 
-**Status (2026-10-30):** Planned. Next is PR 1 (user pool).
+**Status (2026-10-30):** PR 1 is in review. Next is PR 2 (private API).
 
-- [ ] **PR 1: Cognito user pool** (`slice-2/user-pool`)
-  - [ ] Config: `OWNER_EMAIL` and `AUTH_DOMAIN_PREFIX` in `infra/lib/config.ts`, `.env.example`, and CI `env:`, with config tests
-  - [ ] `PrivateAreaStack`: user pool (admin-only signup, TOTP required), app client (code + PKCE, no secret), managed login domain and branding, owner user
-  - [ ] Assertion tests; turning self-signup on turns a test red
-  - [ ] CI deploys `SiteStack PrivateAreaStack`
-  - [ ] Owner: set repo variables `OWNER_EMAIL` and `AUTH_DOMAIN_PREFIX` before merge
+- [ ] **PR 1: Cognito user pool** (`slice-2/user-pool`) — in review
+  - [x] Config: `OWNER_EMAIL` and `AUTH_DOMAIN_PREFIX` in `infra/lib/config.ts`, `.env.example`, and CI `env:`, with config tests
+  - [x] `PrivateAreaStack`: user pool (admin-only signup, TOTP required), app client (code + PKCE, no secret), managed login domain and branding, owner user
+  - [x] Assertion tests; turning self-signup on turns a test red
+  - [x] CI deploys `SiteStack PrivateAreaStack`
+  - [x] Owner: set repo variables `OWNER_EMAIL` and `AUTH_DOMAIN_PREFIX` before merge
   - [ ] Owner: after deploy, sign in once through the managed login URL, set a password, and enroll TOTP
 - [ ] **PR 2: Private API** (`slice-2/private-api`)
   - [ ] `services/private-api`: pure `buildPrivateContent`, thin handler that zod-parses the JWT claims, with unit and handler tests
@@ -33,6 +33,9 @@
 
 **Notes from work so far**
 
+- PR 1 departures:
+  - Pricing wasn't re-verified in this PR: the pool uses the Essentials plan on the free MAU tier from memory. Check the first bill, and the Budgets alerts cover it.
+  - `cdk diff` needs an SSO login (the token had expired), so it runs before merge, not in the PR.
 - Owner choices (2026-10-30): Cognito managed login with authorization code + PKCE, password plus **required TOTP MFA**; the 401 check is a curl step in the CI smoke test, not Playwright.
 
 **Instructions for agents**
