@@ -48,6 +48,8 @@ Progress and the PR breakdown are in `docs/SLICE_1_PLAN.md`.
 
 **Done when:** I see private content after signing in, and an automated test gets 401 with no token.
 
+Progress and the PR breakdown are in `docs/SLICE_2_PLAN.md`.
+
 ## Slice 3: Assistant v0, private only (days 8–9)
 
 - A Lambda calls the LLM with a system prompt plus every write-up in context (the corpus is small).
